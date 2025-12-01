@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 🗓️ Agendador de Tarefas
 
 
@@ -84,3 +85,6 @@ Este projeto está sob a Licença MIT
 Autor: Pedro Henrique
 GitHub: [pedrohensz](https://github.com/pedrohensz)
 LinkedIn:[Pedro Henrique](https://www.linkedin.com/in/pedro-henrique-28175520b/)
+=======
+# Agendador_De_Tarefas
+>>>>>>> 421095a8bf0c2a6ceaebd1d4c96300ed16cd9448
