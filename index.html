@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendador de Tarefas</title>
+    <style>
+        body { background: #f2f2f2; font-family: Arial; margin: 0; padding: 20px; }
+        h1 { text-align: center; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0px 0px 10px #aaa; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; border: 1px solid #ccc; border-radius: 8px; }
+        button { background: #4CAF50; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background: #45a049; }
+        .tarefa { padding: 10px; margin-top: 10px; background: #e9e9e9; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .concluida { text-decoration: line-through; color: green; }
+        .botoes { display: flex; gap: 10px; }
+        .btn-del { background: #d9534f; }
+        .btn-del:hover { background: #c9302c; }
+        .btn-ok { background: #0275d8; }
+        .btn-ok:hover { background: #025aa5; }
+    </style>
+</head>
+<body>
+
+<h1>Agendador de Tarefas</h1>
+
+<div class="container">
+    <h3>Cadastrar Nova Tarefa</h3>
+
+    <input id="nome" placeholder="Nome da tarefa">
+    <input id="descricao" placeholder="Descrição (opcional)">
+    <label for="horario">Horário:</label>
+    <input id="horario" type="time">
+    <button onclick="criarTarefa()">Adicionar</button>
+
+    <h3>Lista de Tarefas</h3>
+    <div id="lista"></div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+async function carregarTarefas() {
+    const res = await fetch(`${API}/tarefas`);
+    const tarefas = await res.json();
+
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    tarefas.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "tarefa";
+        div.innerHTML = `
+            <span class="${t.concluida ? "concluida" : ""}">
+                <b>${t.nome}</b><br>
+                <small>${t.descricao}</small><br>
+                <small>⏰ ${t.horario || "-"}</small>
+            </span>
+            <div class="botoes">
+                <button class="btn-ok" onclick="concluirTarefa(${t.id})">✓</button>
+                <button class="btn-del" onclick="deletarTarefa(${t.id})">🗑</button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+async function criarTarefa() {
+    const nome = document.getElementById("nome").value;
+    const descricao = document.getElementById("descricao").value;
+    const horario = document.getElementById("horario").value;
+
+    if (!nome.trim()) { alert("Nome obrigatório."); return; }
+
+    await fetch(`${API}/tarefas`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            nome: nome,
+            descricao: descricao,
+            horario: horario,
+            concluida: false
+        })
+    });
+
+    document.getElementById("nome").value = "";
+    document.getElementById("descricao").value = "";
+    document.getElementById("horario").value = "";
+    carregarTarefas();
+}
+
+async function concluirTarefa(id) {
+    await fetch(`${API}/tarefas/${id}`, { method: "PUT" });
+    carregarTarefas();
+}
+
+async function deletarTarefa(id) {
+    await fetch(`${API}/tarefas/${id}`, { method: "DELETE" });
+    carregarTarefas();
+}
+
+carregarTarefas();
+</script>
+
+</body>
+</html>
