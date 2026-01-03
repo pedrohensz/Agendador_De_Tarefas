@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 🗓️ Agendador de Tarefas
 
 
